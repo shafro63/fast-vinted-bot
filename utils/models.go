@@ -1,26 +1,170 @@
 package utils
 
 import (
+	"net/url"
 	"time"
+
+	"github.com/bwmarrin/discordgo"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type ItemsResp struct {
-	Items []CatalogItems `json:"items"`
+type User struct {
+	ID        primitive.ObjectID      `bson:"_id,omitempty"`
+	DiscordID string                  `bson:"discord_id"`
+	Username  string                  `bson:"username"`
+	Email     string                  `bson:"email"`
+	Guild     *GuildInfo              `bson:"guild"`
+	Channels  map[string]*ChannelInfo `bson:"channels"`
+	LeavedAt  time.Time               `bson:"leaved_at"`
 }
 
-type CatalogItems struct {
-	ID        int64  `json:"id"`
-	Title     string `json:"title"`
-	IsVisible bool   `json:"is_visible"`
+type GuildInfo struct {
+	GuildID  string    `bson:"guild_id"`
+	JoinedAt time.Time `bson:"joined_at"`
+}
+
+type ChannelInfo struct {
+	Name  string            `bson:"name"`
+	Links map[string]string `bson:"links,omitempty"`
+}
+
+type AuthCookie struct {
+	Accesstoken struct {
+		String  string
+		Expires time.Duration
+	}
+	Refreshtoken struct {
+		String  string
+		Expires time.Duration
+	}
+}
+
+type RequestBuilder struct {
+	URL    *url.URL
+	Proxy  *url.URL
+	Method string
+	Cookie *AuthCookie
+}
+
+type DiscordUserData struct {
+	GuildID     string
+	Member      *discordgo.Member
+	ChannelID   string
+	ChannelName string
+	Link        string
+	LinkName    string
+}
+
+type SessionData struct {
+	Channels map[string]*ChannelInfo `bson:"channels"`
+}
+
+type ItemsResp struct {
+	Items []CatalogItem `json:"items"`
+}
+
+type CatalogItem struct {
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
+	Price struct {
+		Amount       string `json:"amount"`
+		CurrencyCode string `json:"currency_code"`
+	} `json:"price"`
+	IsVisible  bool        `json:"is_visible"`
+	Discount   interface{} `json:"discount"`
+	BrandTitle string      `json:"brand_title"`
+	Path       string      `json:"path"`
+	User       struct {
+		ID         int    `json:"id"`
+		Login      string `json:"login"`
+		ProfileURL string `json:"profile_url"`
+		Photo      struct {
+			ID                  int         `json:"id"`
+			Width               int         `json:"width"`
+			Height              int         `json:"height"`
+			TempUUID            interface{} `json:"temp_uuid"`
+			URL                 string      `json:"url"`
+			DominantColor       string      `json:"dominant_color"`
+			DominantColorOpaque string      `json:"dominant_color_opaque"`
+			Thumbnails          []struct {
+				Type         string      `json:"type"`
+				URL          string      `json:"url"`
+				Width        int         `json:"width"`
+				Height       int         `json:"height"`
+				OriginalSize interface{} `json:"original_size"`
+			} `json:"thumbnails"`
+			IsSuspicious   bool        `json:"is_suspicious"`
+			Orientation    interface{} `json:"orientation"`
+			HighResolution struct {
+				ID          string      `json:"id"`
+				Timestamp   int         `json:"timestamp"`
+				Orientation interface{} `json:"orientation"`
+			} `json:"high_resolution"`
+			FullSizeURL string `json:"full_size_url"`
+			IsHidden    bool   `json:"is_hidden"`
+			Extra       struct {
+			} `json:"extra"`
+		} `json:"photo"`
+		Business bool `json:"business"`
+	} `json:"user"`
+	Conversion interface{} `json:"conversion"`
+	URL        string      `json:"url"`
+	Promoted   bool        `json:"promoted"`
+	Photo      struct {
+		ID                  int64  `json:"id"`
+		ImageNo             int    `json:"image_no"`
+		Width               int    `json:"width"`
+		Height              int    `json:"height"`
+		DominantColor       string `json:"dominant_color"`
+		DominantColorOpaque string `json:"dominant_color_opaque"`
+		URL                 string `json:"url"`
+		IsMain              bool   `json:"is_main"`
+		Thumbnails          []struct {
+			Type         string      `json:"type"`
+			URL          string      `json:"url"`
+			Width        int         `json:"width"`
+			Height       int         `json:"height"`
+			OriginalSize interface{} `json:"original_size"`
+		} `json:"thumbnails"`
+		HighResolution struct {
+			ID          string `json:"id"`
+			Timestamp   int    `json:"timestamp"`
+			Orientation int    `json:"orientation"`
+		} `json:"high_resolution"`
+		IsSuspicious bool   `json:"is_suspicious"`
+		FullSizeURL  string `json:"full_size_url"`
+		IsHidden     bool   `json:"is_hidden"`
+		Extra        struct {
+		} `json:"extra"`
+	} `json:"photo"`
+	FavouriteCount int         `json:"favourite_count"`
+	IsFavourite    bool        `json:"is_favourite"`
+	Badge          interface{} `json:"badge"`
+	ServiceFee     struct {
+		Amount       string `json:"amount"`
+		CurrencyCode string `json:"currency_code"`
+	} `json:"service_fee"`
+	TotalItemPrice struct {
+		Amount       string `json:"amount"`
+		CurrencyCode string `json:"currency_code"`
+	} `json:"total_item_price"`
+	ViewCount     int           `json:"view_count"`
+	SizeTitle     string        `json:"size_title"`
+	ContentSource string        `json:"content_source"`
+	Status        string        `json:"status"`
+	IconBadges    []interface{} `json:"icon_badges"`
+	ItemBox       struct {
+		FirstLine          string `json:"first_line"`
+		SecondLine         string `json:"second_line"`
+		AccessibilityLabel string `json:"accessibility_label"`
+	} `json:"item_box"`
+	SearchTrackingParams struct {
+		Score          int           `json:"score"`
+		MatchedQueries []interface{} `json:"matched_queries"`
+	} `json:"search_tracking_params"`
 }
 
 type Item struct {
-	ID    int64  `json:"id"`
-	Title string `json:"title"`
-	Brand string `json:"brand"`
-}
-
-type Itemm struct {
 	ID                           int64         `json:"id"`
 	Title                        string        `json:"title"`
 	BrandID                      int           `json:"brand_id"`
@@ -324,9 +468,4 @@ type Itemm struct {
 		SecondLine         string `json:"second_line"`
 		AccessibilityLabel string `json:"accessibility_label"`
 	} `json:"item_box"`
-}
-
-type AuthCookie struct {
-	Accesstoken  string
-	Refreshtoken string
 }

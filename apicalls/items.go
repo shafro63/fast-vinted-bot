@@ -6,22 +6,23 @@ import (
 	"io"
 	"net/http"
 
-	"gochopit/utils"
+	"fast-vinted-bot/utils"
 )
 
-func FetchItem(api string, c *utils.AuthCookie) (*utils.Item, error) {
+func FetchItem(rb *utils.RequestBuilder, id int) (*utils.Item, error) {
+	client := &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(rb.Proxy),
+		},
+	}
 
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", api, nil)
+	api := fmt.Sprintf("%s://%s%s/items/%d", rb.URL.Scheme, rb.URL.Host, rb.URL.Path, id)
+	req, err := http.NewRequest(rb.Method, api, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error while making request :%v", err)
 	}
 
-	for k, v := range baseHeaders {
-		req.Header.Set(k, v)
-	}
-	req.Header.Set("Cookie", c.Accesstoken+"; "+c.Refreshtoken)
+	req.Header.Set("Cookie", rb.Cookie.Accesstoken.String)
 
 	resp, err := client.Do(req)
 	if err != nil {

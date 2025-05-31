@@ -4,51 +4,59 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/cookiejar"
-	"net/url"
+	"sync"
+	"time"
 
-	"gochopit/utils"
+	"fast-vinted-bot/utils"
 )
 
-var baseHeaders = map[string]string{
-	"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-	"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-	"Accept-encoding": "gzip, deflate, br, zstd",
-	"Accept-language": "fr",
-}
+var mu sync.Mutex
 
-func GetCookie(link string) []*http.Cookie {
-	parsedUrl, _ := url.Parse(link)
-	vintedUrl := "https://" + parsedUrl.Host
+func GetCookie(rb *utils.RequestBuilder) []*http.Cookie {
+	vintedUrl := "https://" + rb.URL.Host
 	jar, _ := cookiejar.New(nil)
-	client := &http.Client{Jar: jar}
+	client := &http.Client{
+		Jar: jar,
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(rb.Proxy),
+		},
+	}
 
-	req, err := http.NewRequest("GET", vintedUrl, nil)
+	req, err := http.NewRequest(rb.Method, vintedUrl, nil)
 	if err != nil {
-		slog.Debug("Erreur lors de la création de la requête", "erreur", err)
+		slog.Error("unable to create request", "error", err)
 		return nil
 	}
 
-	for k, v := range baseHeaders {
-		req.Header.Set(k, v)
+	req.Header = map[string][]string{
+		"User-Agent":      {utils.Ua.GetRandom()},
+		"Accept":          {"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"},
+		"Accept-encoding": {"gzip, deflate, br, zstd"},
+		"Accept-language": {"fr"},
 	}
-	req.Header.Set("Referer", parsedUrl.Host)
 
 	resp, err := client.Do(req)
 	if err != nil {
-		slog.Debug("Erreur lors de la réception de la réponse", "erreur", err)
+		slog.Error("unable to send request", "error", err)
+		return nil
+	}
+	err = utils.HandleHttpError(client, req, resp)
+	if err != nil {
+		slog.Error("unable to get cookies", "error", err)
 		return nil
 	}
 	defer resp.Body.Close()
 
 	cookies := client.Jar.Cookies(req.URL)
-	if len(cookies) == 0 {
-		slog.Debug("aucun cookie trouvé", "erreur", err)
+	if cookies != nil && len(cookies) == 0 {
 		return nil
 	}
+	slog.Debug("Fetched cookies", "cookies", cookies)
 	return cookies
 }
 
 func FormatedAuthCookie(c []*http.Cookie) *utils.AuthCookie {
+
 	var accesstoken, refreshtoken string
 	for _, c := range c {
 		if c.Name == "access_token_web" {
@@ -58,14 +66,34 @@ func FormatedAuthCookie(c []*http.Cookie) *utils.AuthCookie {
 		}
 	}
 
-	return &utils.AuthCookie{
-		Accesstoken:  accesstoken,
-		Refreshtoken: refreshtoken,
-	}
+	authcookie := &utils.AuthCookie{}
+	authcookie.Accesstoken.String = accesstoken
+	authcookie.Refreshtoken.String = refreshtoken
+	authcookie.Accesstoken.Expires = 110 * time.Minute
+
+	slog.Debug("Cookies formated")
+	return authcookie
 
 }
 
-func RefreshCookie(link string) *utils.AuthCookie {
-	cookie := GetCookie(link)
-	return FormatedAuthCookie(cookie)
+func RefreshCookie(rb *utils.RequestBuilder) {
+	go func() {
+		for {
+			accesstoken_life := rb.Cookie.Accesstoken.Expires
+			time.Sleep(accesstoken_life)
+
+			mu.Lock()
+
+			rb.Cookie.Accesstoken = rb.Cookie.Refreshtoken
+
+			refreshed_cookie := GetCookie(rb)
+			new_cookie := FormatedAuthCookie(refreshed_cookie)
+
+			rb.Cookie = new_cookie
+
+			mu.Unlock()
+
+			slog.Debug("Cookies refreshed")
+		}
+	}()
 }

@@ -17,6 +17,10 @@ func ParsedUrl(link string) (*url.URL, error) {
 	if !strings.HasPrefix(parsedUrl.Host, "www.") {
 		parsedUrl.Host = "www." + parsedUrl.Host
 	}
+	if !strings.HasPrefix(parsedUrl.Path, "/catalog") {
+		return nil, fmt.Errorf("invalid URL: You should only put urls with the /catalog route")
+	}
+
 	params := parsedUrl.Query()
 	if len(params) == 0 {
 		return nil, fmt.Errorf("no filters in url. You have to select filters")
@@ -37,7 +41,7 @@ func ParsedUrl(link string) (*url.URL, error) {
 	return &url.URL{
 		Scheme:   "https",
 		Host:     parsedUrl.Host,
-		Path:     "/api/v2",
+		Path:     "/web/api/core",
 		RawQuery: newParams.Encode(),
 	}, nil
 }
