@@ -21,7 +21,7 @@ var (
 	_              = godotenv.Load()
 	GuildID        = flag.String("guild", os.Getenv("DISCORD_GUILD_ID"), "Test guild ID. If not passed - bot registers commands globally")
 	BotToken       = flag.String("token", os.Getenv("DISCORD_BOT_TOKEN"), "token")
-	RemoveCommands = flag.Bool("rmcmd", true, "Remove all commands after shutdowning or not")
+	RemoveCommands = flag.Bool("rmcmd", false, "Remove all commands after shutdowning or not")
 	ClientID       = flag.String("client", os.Getenv("DISCORD_CLIENT_ID"), "ClientID")
 	s              *discordgo.Session
 )
