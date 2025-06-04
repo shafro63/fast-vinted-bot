@@ -3,7 +3,9 @@
 
 Never miss an item on vinted with this simple and fast monitor ! 🚀
 
+## Demo
 
+You can use the bot for free on my [server](https://discord.gg/y7fApmGAS3) if you don't want to bother the setup process
 
 ## Features
 
@@ -62,10 +64,10 @@ Your vinted link must follow the path /catalog?
 
 Once the discord bot added to your server and the bot is launched you will see the commands names when tapping on " / "
 
-* /create_private_channel : Create a private channel 
-* /add_link : Add your vinted link to one of your channel — This will instantly start monitoring the link 
-* /delete_private_channel : Delete private channel
-* /delete_link : Delete one link from your private channel
+* **/create_private_channel** : Create a private channel 
+* **/add_link** : Add your vinted link to one of your channel — This will instantly start monitoring the link 
+* **/delete_private_channel** : Delete private channel
+* **/delete_link** : Delete one link from your private channel
 
 To visually see the server sessions & data use [mongoDB Compass](https://www.mongodb.com/try/download/compass)
 ## Note
