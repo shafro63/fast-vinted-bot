@@ -164,6 +164,7 @@ type CatalogItem struct {
 	} `json:"search_tracking_params"`
 }
 
+// Deprecated
 type Item struct {
 	ID                           int64         `json:"id"`
 	Title                        string        `json:"title"`

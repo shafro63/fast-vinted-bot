@@ -11,6 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Get the vinted item color photo field and convert it to match the discordgo api type
 func hexToInt(hex string) int {
 	hex = strings.TrimPrefix(hex, "#")          // enlève le '#' s'il y en a un
 	value, err := strconv.ParseInt(hex, 16, 32) // base 16 = hexadécimal
@@ -20,7 +21,8 @@ func hexToInt(hex string) int {
 	return int(value)
 }
 
-func CreateEmbed(item utils.CatalogItem, name string) *discordgo.MessageEmbed {
+// Create a pretty item box in discord
+func CreateEmbed(item *utils.CatalogItem, name string) *discordgo.MessageEmbed {
 	embed := &discordgo.MessageEmbed{
 		Author: &discordgo.MessageEmbedAuthor{
 			URL:     item.User.ProfileURL,
@@ -65,4 +67,18 @@ func CreateEmbed(item utils.CatalogItem, name string) *discordgo.MessageEmbed {
 		},
 	}
 	return embed
+}
+
+// This will add buttons at the bottom of the embeds messages
+func CreateActionsRow(item *utils.CatalogItem) *discordgo.ActionsRow {
+	button := &discordgo.ActionsRow{
+		Components: []discordgo.MessageComponent{
+			discordgo.Button{
+				Label: "🖇️View",
+				Style: discordgo.LinkButton,
+				URL:   item.URL,
+			},
+		},
+	}
+	return button
 }

@@ -19,6 +19,8 @@ var (
 
 	ChannelCommandID = os.Getenv("DISCORD_COMMAND_CHANNEL_ID")
 
+	// Handlers for discord commands
+	// See the discordgo api for additionnal info
 	CommandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 
 		"create_private_channel": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -142,7 +144,7 @@ var (
 
 			user_channels, err := database.GetChannels("db", "vinted", data)
 			if err != nil {
-				fmt.Print(err)
+				slog.Debug("Get Channels Error", "error", err)
 				msgError := fmt.Sprintf("%v", err)
 				s.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
 					Content: &msgError,
@@ -205,7 +207,7 @@ var (
 
 			channels, err := database.GetChannels("db", "vinted", data)
 			if err != nil {
-				slog.Error("Get channels error", "user", user.ID, "error", err)
+				slog.Debug("Get channels error", "user", user.ID, "error", err)
 				return
 			}
 
@@ -262,7 +264,7 @@ var (
 				s.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
 					Content: &msg,
 				})
-				slog.Error("Get channels error", "user", user.ID, "error", err)
+				slog.Debug("Get channels error", "user", user.ID, "error", err)
 				return
 			} else if len(userChannels) == 0 {
 				msg := "❌ You must create a private channel first"

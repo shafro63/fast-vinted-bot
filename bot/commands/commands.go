@@ -4,13 +4,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Discord commands names
 var (
 	Commands = []*discordgo.ApplicationCommand{
 		{
-			Name: "create_private_channel",
-			// All commands and options must have a description
-			// Commands/options without description will fail the registration
-			// of the command.
+			Name:        "create_private_channel",
 			Description: "Create a private channel",
 			Type:        discordgo.ChatApplicationCommand,
 			Options: []*discordgo.ApplicationCommandOption{{

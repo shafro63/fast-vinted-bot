@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Parses the user's link input
 func ParsedUrl(link string) (*url.URL, error) {
 	parsedUrl, err := url.Parse(link)
 	if err != nil {
@@ -41,7 +42,7 @@ func ParsedUrl(link string) (*url.URL, error) {
 	return &url.URL{
 		Scheme:   "https",
 		Host:     parsedUrl.Host,
-		Path:     "/web/api/core",
+		Path:     "/api/v2",
 		RawQuery: newParams.Encode(),
 	}, nil
 }

@@ -7,13 +7,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Config définit la configuration du logger
+// Logger Config
 type Config struct {
 	Level    slog.Level
 	FilePath string
 }
 
-// LoadConfig charge les variables d’environnement du `.env`
 func LoadConfig() *Config {
 	// Charger le fichier .env
 	_ = godotenv.Load()

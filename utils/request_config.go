@@ -2,10 +2,8 @@ package utils
 
 import (
 	"log/slog"
-	"math/rand"
 	"net/url"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 	randua "github.com/lib4u/fake-useragent"
@@ -35,7 +33,7 @@ func getUserAgent() *randua.UserAgent {
 var Ua = getUserAgent()
 
 var Headers = map[string][]string{
-	"User-Agent":      {Ua.GetRandom()},
+	"User-Agent":      {Ua.GetRandom()}, //random user agent
 	"Accept":          {"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"},
 	"Accept-encoding": {"gzip, deflate, br, zstd"},
 	"Accept-language": {"fr"},
@@ -43,10 +41,4 @@ var Headers = map[string][]string{
 
 func SetProxy(rb *RequestBuilder) {
 	rb.Proxy = getProxy()
-}
-
-func GetRandomDelayMs(ms float64) int64 {
-	source := rand.NewSource(time.Now().UnixNano())
-	rng := rand.New(source)
-	return int64(rng.Float64() * ms)
 }

@@ -76,6 +76,7 @@ func FormatedAuthCookie(c []*http.Cookie) *utils.AuthCookie {
 
 }
 
+// The accesstoken cookie expires every 2 hours, so it needs to be refreshed
 func RefreshCookie(rb *utils.RequestBuilder) {
 	go func() {
 		for {

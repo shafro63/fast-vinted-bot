@@ -14,11 +14,9 @@ import (
 	"fast-vinted-bot/logger"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/joho/godotenv"
 )
 
 var (
-	_              = godotenv.Load()
 	GuildID        = flag.String("guild", os.Getenv("DISCORD_GUILD_ID"), "Test guild ID. If not passed - bot registers commands globally")
 	BotToken       = flag.String("token", os.Getenv("DISCORD_BOT_TOKEN"), "token")
 	RemoveCommands = flag.Bool("rmcmd", false, "Remove all commands after shutdowning or not")
@@ -26,7 +24,9 @@ var (
 	s              *discordgo.Session
 )
 
-func init() { flag.Parse() }
+func init() {
+	flag.Parse()
+}
 
 func init() { logger.InitLogger() }
 

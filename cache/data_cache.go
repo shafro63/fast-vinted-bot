@@ -5,6 +5,8 @@ import (
 	"sync"
 )
 
+//Cache for users entries and sessions
+
 var DataCache = &MiniCache{
 	MonitoringChannels: make(map[string]*Session),
 	UsersData:          make(map[string]*utils.DiscordUserData),

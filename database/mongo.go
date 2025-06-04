@@ -27,10 +27,10 @@ func InitMongoClient() {
 	// Connect to MongoDB
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		slog.Error("failed to connect to mongoDB", "error", err)
+		slog.Error("unable to connect to mongoDB", "error", err)
 		os.Exit(1)
 	}
-	// Verify connexion sucess (ping)
+	// Verify connection sucess (ping)
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
 		slog.Error("can't send ping to mongoDB", "error", err)

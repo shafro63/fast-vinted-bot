@@ -21,10 +21,11 @@ import (
 
 var _ = godotenv.Load()
 
+// Fetch Items and Send them on your discord channel
 func FetchAndSendToDiscord(s *discordgo.Session, data *utils.DiscordUserData, rb *utils.RequestBuilder) {
 	duration, err := strconv.Atoi(os.Getenv("FETCHING_DURATION"))
 	if err != nil {
-		slog.Error("unable to get env entry", "error", err)
+		slog.Error("unable to get duration entry", "error", err)
 		os.Exit(1)
 	}
 
@@ -36,24 +37,35 @@ func FetchAndSendToDiscord(s *discordgo.Session, data *utils.DiscordUserData, rb
 
 	dataChan := make(chan []utils.CatalogItem)
 	stopChan := make(chan bool)
-	lastId := int64(0)
+	var lastId int64
 
 	cache.DataCache.SetMonitorSession(data, stopChan)
 
 	apicalls.RefreshCookie(rb)
 	services.FetchCatalogAtInterval(rb, timer, dataChan, stopChan)
 
+	// Get the latest items
 	for items := range dataChan {
-		newitems, id := services.NewItems(items, lastId)
-		if newitems == nil {
+		latest_items := services.LatestItems(items, &lastId)
+		if latest_items == nil {
 			continue
 		}
-		lastId = id
 
-		for i := range len(newitems) {
-			item := newitems[i]
-			embedItem := components.CreateEmbed(item, data.LinkName)
-			_, err := s.ChannelMessageSendEmbed(data.ChannelID, embedItem)
+		for i := range len(latest_items) {
+			item := latest_items[i]
+
+			embedItem := components.CreateEmbed(&item, data.LinkName)
+			button := components.CreateActionsRow(&item)
+
+			msg := &discordgo.MessageSend{
+				Embeds: []*discordgo.MessageEmbed{
+					embedItem,
+				},
+				Components: []discordgo.MessageComponent{
+					button,
+				},
+			}
+			_, err = s.ChannelMessageSendComplex(data.ChannelID, msg)
 			if err != nil {
 				slog.Error("Error while sending ads to discord", "channel", data.ChannelID, "error", err)
 			}
@@ -63,6 +75,7 @@ func FetchAndSendToDiscord(s *discordgo.Session, data *utils.DiscordUserData, rb
 	}
 }
 
+// This is launched at startup and load the sessions
 func LaunchMonitorSessions(s *discordgo.Session) {
 	var wg sync.WaitGroup
 

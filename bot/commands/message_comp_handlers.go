@@ -20,6 +20,7 @@ import (
 var (
 	_ = godotenv.Load()
 
+	// Handlers for discord message components
 	MsgComponentHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 		"add_link_menu": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			user := i.Member.User
@@ -37,7 +38,7 @@ var (
 
 			userlinks, err := database.GetLinks("db", "vinted", data)
 			if err != nil {
-				slog.Error("Get links error", "user", user.ID, "error", err, "channelID", data.ChannelID)
+				slog.Debug("Get links error", "user", user.ID, "error", err, "channelID", data.ChannelID)
 
 				msgError := fmt.Sprintf("%v", err)
 				s.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
@@ -102,6 +103,7 @@ var (
 			cookie := apicalls.FormatedAuthCookie(c)
 			if cookie == nil {
 				s.ChannelMessageSend(i.ChannelID, "Can't get vinted cookie, please contact admins")
+				slog.Debug("Can't get vinted cookie")
 				return
 			}
 			rb.Cookie = cookie
@@ -214,9 +216,13 @@ var (
 			stopChan := cache.DataCache.GetMonitorSession(data)
 			if stopChan == nil {
 				msgSuccess := "✅Link properly deleted from your channel"
-				s.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
-					Content:    &msgSuccess,
-					Components: &[]discordgo.MessageComponent{},
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseUpdateMessage,
+					Data: &discordgo.InteractionResponseData{
+						Content:    msgSuccess,
+						Flags:      discordgo.MessageFlagsEphemeral,
+						Components: []discordgo.MessageComponent{},
+					},
 				})
 				return
 			} else {
@@ -225,9 +231,13 @@ var (
 				cache.DataCache.DeleteMonitorSession(data)
 
 				msgSuccess := "✅ Link properly deleted from your channel"
-				s.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
-					Content:    &msgSuccess,
-					Components: &[]discordgo.MessageComponent{},
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseUpdateMessage,
+					Data: &discordgo.InteractionResponseData{
+						Content:    msgSuccess,
+						Flags:      discordgo.MessageFlagsEphemeral,
+						Components: []discordgo.MessageComponent{},
+					},
 				})
 			}
 

@@ -9,6 +9,7 @@ import (
 	"fast-vinted-bot/utils"
 )
 
+// Deprecated
 func FetchItem(rb *utils.RequestBuilder, id int) (*utils.Item, error) {
 	client := &http.Client{
 		Transport: &http.Transport{

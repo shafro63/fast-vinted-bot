@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// Handle the http errors for debugging
 func HandleHttpError(client *http.Client, req *http.Request, resp *http.Response) error {
 	max_retries := 3
 

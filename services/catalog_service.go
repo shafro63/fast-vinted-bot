@@ -10,30 +10,7 @@ import (
 	"fast-vinted-bot/utils"
 )
 
-func NewItems(items []utils.CatalogItem, lastId int64) ([]utils.CatalogItem, int64) {
-	var newItems []utils.CatalogItem
-	if len(items) == 0 {
-		return nil, 0
-	}
-	var i0 = items[0]
-	if lastId != 0 {
-		for _, item := range items {
-			if item.ID == lastId {
-				break
-			}
-			newItems = append(newItems, item)
-		}
-		lastId = i0.ID
-	} else {
-		lastId = i0.ID
-	}
-	if len(newItems) == 0 {
-		slog.Debug("New items Success", "items", newItems)
-	}
-	slog.Debug("New items Success")
-	return newItems, lastId
-}
-
+// Fetch the catalog and send the items throught a channel for filtering
 func FetchCatalogAtInterval(rb *utils.RequestBuilder, timer *cache.Timer, dataChan chan<- []utils.CatalogItem, stopChan chan bool) {
 
 	go func() {
@@ -63,4 +40,30 @@ func FetchCatalogAtInterval(rb *utils.RequestBuilder, timer *cache.Timer, dataCh
 			}
 		}
 	}()
+}
+
+// Get only latest items by filtering by last item id captured
+func LatestItems(items []utils.CatalogItem, lastId *int64) []utils.CatalogItem {
+	var newItems []utils.CatalogItem
+	if items != nil && len(items) == 0 {
+		return nil
+	}
+	var i0 = items[0]
+	if *lastId != 0 {
+		for _, item := range items {
+			if item.ID == *lastId {
+				break
+			}
+			newItems = append(newItems, item)
+		}
+		*lastId = i0.ID
+	} else {
+		*lastId = i0.ID
+	}
+	if len(newItems) == 0 {
+		slog.Debug("no new items")
+		return newItems
+	}
+	slog.Debug("new items !")
+	return newItems
 }

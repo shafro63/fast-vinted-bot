@@ -20,7 +20,7 @@ func InitLogger() {
 		if config.FilePath != "" {
 			file, err := os.OpenFile(config.FilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 			if err != nil {
-				panic("Impossible d'ouvrir le fichier de logs " + err.Error())
+				panic("can't open log file " + err.Error())
 			}
 			handler = slog.NewJSONHandler(file, &slog.HandlerOptions{Level: config.Level})
 		} else {
@@ -29,6 +29,6 @@ func InitLogger() {
 
 		Log = slog.New(handler)
 		slog.SetDefault(Log)
-		Log.Debug("Logger initialisé", "niveau", config.Level, "fichier", config.FilePath)
+		Log.Info("Logger initialized !", "level", config.Level, "file", config.FilePath)
 	})
 }
