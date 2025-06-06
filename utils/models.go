@@ -42,7 +42,6 @@ type AuthCookie struct {
 
 type RequestBuilder struct {
 	URL    *url.URL
-	Proxy  *url.URL
 	Method string
 	Cookie *AuthCookie
 	Client *http.Client

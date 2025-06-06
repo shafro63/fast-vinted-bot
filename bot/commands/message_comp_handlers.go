@@ -94,8 +94,7 @@ var (
 				Components: &[]discordgo.MessageComponent{},
 			})
 
-			rb := &utils.RequestBuilder{}
-			rb.New()
+			rb := utils.NewRequestBuilder()
 			rb.Method = "GET"
 			rb.URL = parsedUrl
 

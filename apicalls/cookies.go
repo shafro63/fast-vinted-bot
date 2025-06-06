@@ -15,6 +15,8 @@ var mu sync.Mutex
 func GetCookie(rb *utils.RequestBuilder) []*http.Cookie {
 	vintedUrl := "https://" + rb.URL.Host
 	jar, _ := cookiejar.New(nil)
+
+	// Use the same client per link to avoid open connections overload
 	client := rb.Client
 	client.Jar = jar
 
@@ -44,13 +46,17 @@ func GetCookie(rb *utils.RequestBuilder) []*http.Cookie {
 	defer resp.Body.Close()
 
 	cookies := client.Jar.Cookies(req.URL)
-	if cookies != nil && len(cookies) == 0 {
+	if len(cookies) == 0 {
 		return nil
 	}
+
+	// Empty the jar so the future requests won't include useless cookies
+	client.Jar = nil
 	slog.Debug("Fetched cookies", "cookies", cookies)
 	return cookies
 }
 
+// Function to get api access tokens
 func FormatedAuthCookie(c []*http.Cookie) *utils.AuthCookie {
 
 	var accesstoken, refreshtoken string
@@ -63,8 +69,11 @@ func FormatedAuthCookie(c []*http.Cookie) *utils.AuthCookie {
 	}
 
 	authcookie := &utils.AuthCookie{}
+
 	authcookie.Accesstoken.String = accesstoken
 	authcookie.Refreshtoken.String = refreshtoken
+
+	// The accesstoken cookie expires every 2 hours,
 	authcookie.Accesstoken.Expires = 110 * time.Minute
 
 	slog.Debug("Cookies formated")
@@ -72,7 +81,7 @@ func FormatedAuthCookie(c []*http.Cookie) *utils.AuthCookie {
 
 }
 
-// The accesstoken cookie expires every 2 hours, so it needs to be refreshed
+// So it needs to be refreshed with his refreshtoken
 func RefreshCookie(rb *utils.RequestBuilder) {
 	go func() {
 		for {

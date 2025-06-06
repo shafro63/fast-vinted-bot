@@ -114,8 +114,7 @@ func LaunchMonitorSessions(s *discordgo.Session) {
 								return
 							}
 
-							rb := &utils.RequestBuilder{}
-							rb.New()
+							rb := utils.NewRequestBuilder()
 							rb.Method = "GET"
 							rb.URL = parsedUrl
 

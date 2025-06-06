@@ -40,14 +40,15 @@ var Headers = map[string][]string{
 	"Accept-language": {"fr"},
 }
 
-// Request builder for sending requests
-func (rb *RequestBuilder) New() {
-	rb.Proxy = getProxy()
+// Create a New Request builder config
+func NewRequestBuilder() *RequestBuilder {
+	proxy := getProxy()
+	rb := RequestBuilder{}
 	rb.Client = &http.Client{
-		Jar: nil,
 		Transport: &http.Transport{
-			Proxy: http.ProxyURL(rb.Proxy),
+			Proxy:             http.ProxyURL(proxy),
+			DisableKeepAlives: true,
 		},
 	}
-
+	return &rb
 }

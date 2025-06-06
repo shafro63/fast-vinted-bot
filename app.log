@@ -2,3 +2,11 @@
 {"time":"2025-06-04T17:24:03.664674+02:00","level":"INFO","msg":"Handlers initialised"}
 {"time":"2025-06-04T17:24:03.689032+02:00","level":"INFO","msg":"Connected to mongoDB !"}
 {"time":"2025-06-04T17:24:04.11656+02:00","level":"ERROR","msg":"Cannot open the session","error":"websocket: close 4004: Authentication failed."}
+{"time":"2025-06-06T21:53:22.637113+02:00","level":"INFO","msg":"Logger initialized !","level":"INFO","file":"app.log"}
+{"time":"2025-06-06T21:53:22.639281+02:00","level":"INFO","msg":"Handlers initialised"}
+{"time":"2025-06-06T21:53:22.650058+02:00","level":"INFO","msg":"Connected to mongoDB !"}
+{"time":"2025-06-06T21:53:23.077705+02:00","level":"ERROR","msg":"Cannot open the session","error":"websocket: close 4004: Authentication failed."}
+{"time":"2025-06-06T21:53:34.91961+02:00","level":"INFO","msg":"Logger initialized !","level":"INFO","file":"app.log"}
+{"time":"2025-06-06T21:53:34.919959+02:00","level":"INFO","msg":"Handlers initialised"}
+{"time":"2025-06-06T21:53:34.926264+02:00","level":"INFO","msg":"Connected to mongoDB !"}
+{"time":"2025-06-06T21:53:35.308692+02:00","level":"ERROR","msg":"Cannot open the session","error":"websocket: close 4004: Authentication failed."}

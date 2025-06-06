@@ -45,7 +45,7 @@ func FetchCatalogAtInterval(rb *utils.RequestBuilder, timer *cache.Timer, dataCh
 // Get only latest items by filtering by last item id captured
 func LatestItems(items []utils.CatalogItem, lastId *int64) []utils.CatalogItem {
 	var newItems []utils.CatalogItem
-	if items != nil && len(items) == 0 {
+	if len(items) == 0 {
 		return nil
 	}
 	var i0 = items[0]
