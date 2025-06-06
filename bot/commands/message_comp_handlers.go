@@ -95,9 +95,9 @@ var (
 			})
 
 			rb := &utils.RequestBuilder{}
+			rb.New()
 			rb.Method = "GET"
 			rb.URL = parsedUrl
-			utils.SetProxy(rb)
 
 			c := apicalls.GetCookie(rb)
 			cookie := apicalls.FormatedAuthCookie(c)

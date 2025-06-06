@@ -9,11 +9,8 @@ import (
 )
 
 func FetchCatalogItems(rb *utils.RequestBuilder) ([]utils.CatalogItem, error) {
-	client := &http.Client{
-		Transport: &http.Transport{
-			Proxy: http.ProxyURL(rb.Proxy),
-		},
-	}
+	client := rb.Client
+	client.Jar = nil
 
 	api := fmt.Sprintf("%s://%s%s/catalog/items?%s", rb.URL.Scheme, rb.URL.Host, rb.URL.Path, rb.URL.RawQuery)
 

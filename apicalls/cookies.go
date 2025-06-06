@@ -15,12 +15,8 @@ var mu sync.Mutex
 func GetCookie(rb *utils.RequestBuilder) []*http.Cookie {
 	vintedUrl := "https://" + rb.URL.Host
 	jar, _ := cookiejar.New(nil)
-	client := &http.Client{
-		Jar: jar,
-		Transport: &http.Transport{
-			Proxy: http.ProxyURL(rb.Proxy),
-		},
-	}
+	client := rb.Client
+	client.Jar = jar
 
 	req, err := http.NewRequest(rb.Method, vintedUrl, nil)
 	if err != nil {

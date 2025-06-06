@@ -2,6 +2,7 @@ package utils
 
 import (
 	"log/slog"
+	"net/http"
 	"net/url"
 	"os"
 
@@ -39,6 +40,14 @@ var Headers = map[string][]string{
 	"Accept-language": {"fr"},
 }
 
-func SetProxy(rb *RequestBuilder) {
+// Request builder for sending requests
+func (rb *RequestBuilder) New() {
 	rb.Proxy = getProxy()
+	rb.Client = &http.Client{
+		Jar: nil,
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(rb.Proxy),
+		},
+	}
+
 }

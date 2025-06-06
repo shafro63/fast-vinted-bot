@@ -45,7 +45,7 @@ type TimerSessions struct {
 
 type Timer struct {
 	TickerChannel chan struct{} // Each monitor will have a channel where the tick will be sent (refresh rate time)
-	Duration      time.Duration // Duration of every monitors
+	Duration      time.Duration // Session duration of every monitor
 }
 
 // Helper functions for the timer cache
