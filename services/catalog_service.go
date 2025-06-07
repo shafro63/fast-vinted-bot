@@ -48,13 +48,11 @@ func LatestItems(items []utils.CatalogItem, lastId *int64) []utils.CatalogItem {
 		return nil
 	}
 	newest := items[0].ID
-
 	previous := *lastId
 	if previous == 0 {
+		*lastId = newest
 		return nil
 	}
-
-	*lastId = newest
 
 	var result []utils.CatalogItem
 	for _, item := range items {
