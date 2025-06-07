@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	randua "github.com/lib4u/fake-useragent"
@@ -41,7 +42,7 @@ var Headers = map[string][]string{
 }
 
 // Create a New Request builder config
-func NewRequestBuilder() *RequestBuilder {
+func newRequestBuilder() *RequestBuilder {
 	proxy := getProxy()
 	rb := RequestBuilder{}
 	rb.Client = &http.Client{
@@ -49,6 +50,9 @@ func NewRequestBuilder() *RequestBuilder {
 			Proxy:             http.ProxyURL(proxy),
 			DisableKeepAlives: true,
 		},
+		Timeout: 3 * time.Second,
 	}
 	return &rb
 }
+
+var Rb = newRequestBuilder()
