@@ -44,26 +44,30 @@ func FetchCatalogAtInterval(rb *utils.RequestBuilder, timer *cache.Timer, dataCh
 
 // Get only latest items by filtering by last item id captured
 func LatestItems(items []utils.CatalogItem, lastId *int64) []utils.CatalogItem {
-	var newItems []utils.CatalogItem
 	if len(items) == 0 {
 		return nil
 	}
-	var i0 = items[0]
-	if *lastId != 0 {
-		for _, item := range items {
-			if item.ID == *lastId {
-				break
-			}
-			newItems = append(newItems, item)
+	newest := items[0].ID
+
+	previous := *lastId
+	if previous == 0 {
+		return nil
+	}
+
+	*lastId = newest
+
+	var result []utils.CatalogItem
+	for _, item := range items {
+		if item.ID == previous {
+			break
 		}
-		*lastId = i0.ID
-	} else {
-		*lastId = i0.ID
+		result = append(result, item)
 	}
-	if len(newItems) == 0 {
+	if len(result) == 0 {
 		slog.Debug("no new items")
-		return newItems
+		return result
+	} else {
+		slog.Debug("new items !")
 	}
-	slog.Debug("new items !")
-	return newItems
+	return result
 }
