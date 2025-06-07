@@ -25,17 +25,17 @@ func FetchCatalogAtInterval(rb *utils.RequestBuilder, timer *cache.Timer, dataCh
 			case <-timer.TickerChannel:
 				f, err := apicalls.FetchCatalogItems(rb)
 				if err != nil {
-					slog.Debug("error while fetching catalog", "error", err)
+					slog.Error("Error FetchCatalogInterval", "error", err, "url", rb.URL)
 					continue
 				}
 				dataChan <- f
 			case <-ctx.Done():
 				end := time.Since(start)
-				slog.Debug("Fetching Items End", "duration", end)
+				slog.Info("Fetching Items End", "duration", end)
 				return
 			case <-stopChan:
 				end := time.Since(start)
-				slog.Debug("Fetch stopped", "duration", end)
+				slog.Info("Fetch stopped", "duration", end)
 				return
 			}
 		}

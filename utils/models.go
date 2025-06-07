@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"net/http"
 	"net/url"
 	"time"
 
@@ -44,7 +43,7 @@ type RequestBuilder struct {
 	URL    *url.URL
 	Method string
 	Cookie *AuthCookie
-	Client *http.Client
+	Proxy  *url.URL
 }
 
 type DiscordUserData struct {

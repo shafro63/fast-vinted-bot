@@ -5,13 +5,20 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"fast-vinted-bot/utils"
 )
 
 // Deprecated
 func FetchItem(rb *utils.RequestBuilder, id int) (*utils.Item, error) {
-	client := rb.Client
+	client := &http.Client{
+		Transport: &http.Transport{
+			Proxy:             http.ProxyURL(rb.Proxy),
+			DisableKeepAlives: true,
+		},
+		Timeout: 3 * time.Second,
+	}
 
 	api := fmt.Sprintf("%s://%s%s/items/%d", rb.URL.Scheme, rb.URL.Host, rb.URL.Path, id)
 	req, err := http.NewRequest(rb.Method, api, nil)

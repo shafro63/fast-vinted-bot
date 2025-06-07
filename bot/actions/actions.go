@@ -114,9 +114,10 @@ func LaunchMonitorSessions(s *discordgo.Session) {
 								return
 							}
 
-							rb := utils.Rb
+							rb := &utils.RequestBuilder{}
 							rb.Method = "GET"
 							rb.URL = parsedUrl
+							utils.SetProxy(rb)
 
 							c := apicalls.GetCookie(rb)
 							cookie := apicalls.FormatedAuthCookie(c)

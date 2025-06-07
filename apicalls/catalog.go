@@ -4,12 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"fast-vinted-bot/utils"
 )
 
 func FetchCatalogItems(rb *utils.RequestBuilder) ([]utils.CatalogItem, error) {
-	client := rb.Client
+	client := &http.Client{
+		Transport: &http.Transport{
+			Proxy:             http.ProxyURL(rb.Proxy),
+			DisableKeepAlives: true,
+		},
+		Timeout: 3 * time.Second,
+	}
 
 	api := fmt.Sprintf("%s://%s%s/catalog/items?%s", rb.URL.Scheme, rb.URL.Host, rb.URL.Path, rb.URL.RawQuery)
 

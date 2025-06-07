@@ -16,8 +16,13 @@ func GetCookie(rb *utils.RequestBuilder) []*http.Cookie {
 	vintedUrl := "https://" + rb.URL.Host
 	jar, _ := cookiejar.New(nil)
 
-	// Use the same client per link to avoid open connections overload
-	client := rb.Client
+	client := &http.Client{
+		Transport: &http.Transport{
+			Proxy:             http.ProxyURL(rb.Proxy),
+			DisableKeepAlives: true,
+		},
+		Timeout: 3 * time.Second,
+	}
 	client.Jar = jar
 
 	req, err := http.NewRequest(rb.Method, vintedUrl, nil)

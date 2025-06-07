@@ -2,10 +2,8 @@ package utils
 
 import (
 	"log/slog"
-	"net/http"
 	"net/url"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 	randua "github.com/lib4u/fake-useragent"
@@ -41,18 +39,6 @@ var Headers = map[string][]string{
 	"Accept-language": {"fr"},
 }
 
-// Create a New Request builder config
-func newRequestBuilder() *RequestBuilder {
-	proxy := getProxy()
-	rb := RequestBuilder{}
-	rb.Client = &http.Client{
-		Transport: &http.Transport{
-			Proxy:             http.ProxyURL(proxy),
-			DisableKeepAlives: true,
-		},
-		Timeout: 3 * time.Second,
-	}
-	return &rb
+func SetProxy(rb *RequestBuilder) {
+	rb.Proxy = getProxy()
 }
-
-var Rb = newRequestBuilder()
