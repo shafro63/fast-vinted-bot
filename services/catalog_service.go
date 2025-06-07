@@ -49,18 +49,21 @@ func LatestItems(items []utils.CatalogItem, lastId *int64) []utils.CatalogItem {
 	}
 	newest := items[0].ID
 	previous := *lastId
+
+	var result []utils.CatalogItem
 	if previous == 0 {
 		*lastId = newest
 		return nil
+	} else {
+		for _, item := range items {
+			if item.ID == previous {
+				break
+			}
+			result = append(result, item)
+		}
+		*lastId = newest
 	}
 
-	var result []utils.CatalogItem
-	for _, item := range items {
-		if item.ID == previous {
-			break
-		}
-		result = append(result, item)
-	}
 	if len(result) == 0 {
 		slog.Debug("no new items")
 		return result
